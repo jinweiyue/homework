@@ -1,0 +1,118 @@
+import controlP5.*;
+import java.awt.Font;
+
+ControlP5 cp5;
+Textarea textArea;
+int fontSize = 12;
+int fontColor = color(0);
+
+void settings() {
+  size(800, 600);
+}
+
+void setup() {
+  cp5 = new ControlP5(this);
+
+  textArea = cp5.addTextarea("textArea")
+    .setPosition(10, 10)
+    .setSize(780, 500)
+    .setLineHeight(14)
+    .setFont(createFont("Helvetica", fontSize))
+    .setColor(fontColor)
+    .setColorBackground(color(255))
+    .setColorForeground(color(255))
+    .setColorActive(color(255))
+    .setBorderColor(color(0));
+
+  cp5.addButton("saveButton")
+     .setPosition(10, 530)
+     .setSize(90, 30)
+     .setLabel("save")
+     .addListener(new ControlListener() {
+       public void controlEvent(ControlEvent event) {
+         if (event.getName().equals("saveButton")) {
+           String[] lines = textArea.getText().split("\n");
+           saveStrings("text.txt", lines);
+         }
+       }
+     });
+
+  cp5.addButton("exportButton")
+     .setPosition(110, 530)
+     .setSize(90, 30)
+     .setLabel("export")
+     .addListener(new ControlListener() {
+       public void controlEvent(ControlEvent event) {
+         if (event.getName().equals("exportButton")) {
+           String[] lines = textArea.getText().split("\n");
+           saveStrings("text.txt", lines);
+           println("已导出为text.txt文件");
+         }
+       }
+     });
+
+  cp5.addButton("increaseFontSizeButton")
+     .setPosition(210, 530)
+     .setSize(90, 30)
+     .setLabel("increaseFontSize " + fontSize)
+     .addListener(new ControlListener() {
+       public void controlEvent(ControlEvent event) {
+         if (event.getName().equals("increaseFontSizeButton")) {
+           fontSize++;
+           textArea.setFont(createFont("Helvetica", fontSize));
+           cp5.getController("increaseFontSizeButton").setLabel("增大字号 " + fontSize);
+         }
+       }
+     });
+
+  cp5.addButton("decreaseFontSizeButton")
+     .setPosition(310, 530)
+     .setSize(90, 30)
+     .setLabel("decreaseFontSize " + fontSize)
+     .addListener(new ControlListener() {
+       public void controlEvent(ControlEvent event) {
+         if (event.getName().equals("decreaseFontSizeButton")) {
+           if (fontSize > 1) {
+             fontSize--;
+             textArea.setFont(createFont("Helvetica", fontSize));
+             cp5.getController("decreaseFontSizeButton").setLabel("减小字号 " + fontSize);
+           }
+         }
+       }
+     });
+
+  cp5.addButton("changeFontColorButton")
+     .setPosition(410, 530)
+     .setSize(90, 30)
+     .setLabel("changeFontColor")
+     .addListener(new ControlListener() {
+       public void controlEvent(ControlEvent event) {
+         if (event.getName().equals("changeFontColorButton")) {
+           fontColor = cp5.getColor().getForeground();
+           int newColor = color(random(255), random(255), random(255));
+           textArea.setColor(newColor);
+           cp5.getController("changeFontColorButton").setColorForeground(newColor);
+         }
+       }
+     });
+}
+
+void draw() {
+  background(255);
+  cp5.draw();
+}
+
+void keyPressed() {
+  if (key == '\t') {
+    textArea.append("\t");
+  } else if (key == '\n') {
+    textArea.append("\n");
+  } else if (key == BACKSPACE) {
+    String currentText = textArea.getText();
+    if (currentText.length() > 0) {
+      textArea.setText(currentText.substring(0, currentText.length() - 1));
+    }
+  } else {
+    textArea.append(String.valueOf(key));
+  }
+}
